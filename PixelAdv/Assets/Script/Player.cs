@@ -40,7 +40,8 @@ public class Player : MonoBehaviour
     private bool isFacingRight = true;
 
     // attack
-    private bool isAttacking = false;
+    private bool isAttacking1 = false;
+    private bool isAttacking2 = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -65,21 +66,36 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z) && isGround)
         {
-            isAttacking = true;
-            animator.SetBool("isAttacking", true);
-            if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.attack"))
+            if(!isAttacking1 && !isAttacking2)
             {
-                animator.SetBool("isAttacking2", true);
+                isAttacking1 = true;
+                animator.SetBool("isAttacking", true);
             }
+            else if (isAttacking1)
+            {
+                animator.SetBool("isAttacking2", true);                
+                isAttacking2 = true;
+                isAttacking1 = false;
+            }
+            else if (isAttacking2)
+            {                
+                animator.SetBool("isAttacking3", true);
+            }
+            
+
+            
+            
         }             
         else if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.attackOver"))
         {
-            isAttacking = false;
+            isAttacking1 = false;
+            isAttacking2 = false;
             animator.SetBool("isAttacking", false);
             animator.SetBool("isAttacking2", false);
+            animator.SetBool("isAttacking3", false);
 
         }   
-        else if(!isAttacking)
+        else if(!isAttacking1)
         {
             Move();
         }
@@ -176,9 +192,12 @@ public class Player : MonoBehaviour
             if (isJumping && !isFailing)
             {                
                 animator.SetBool("isJump", true);
+                animator.SetBool("isFailing", false);
+
             }
             else if (isFailing)
             {
+                animator.SetBool("isJump", false);
                 animator.SetBool("isFailing", true);
             }
         }        
