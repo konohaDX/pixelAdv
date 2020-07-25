@@ -24,13 +24,13 @@ public class Player : MonoBehaviour
 
     // jump
     private float failForce = 0;
-    private bool isJumping = false;
+    [SerializeField]private bool isJumping = false;
 
     // failing
     private bool isFailing = false;
 
     // ground
-    private bool isGround = false;
+    [SerializeField] private bool isGround = false;
 
     // inputs
     private float inputH = 0;
@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     // attack
     private bool isAttacking1 = false;
     private bool isAttacking2 = false;
+    private bool isAttackOver = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,10 +67,13 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z) && isGround)
         {
-            if(!isAttacking1 && !isAttacking2)
+            isAttackOver = false;
+            if (!isAttacking1 && !isAttacking2)
             {
                 isAttacking1 = true;
                 animator.SetBool("isAttacking", true);
+                animator.SetBool("isRun", false);
+
             }
             else if (isAttacking1)
             {
@@ -95,10 +99,16 @@ public class Player : MonoBehaviour
             animator.SetBool("isAttacking3", false);
 
         }   
-        else if(!isAttacking1)
+        if(isAttackOver)
         {
             Move();
         }
+
+        if (CheckAnimatorState("attackOver"))
+        {
+            isAttackOver = true;
+        }
+        
 
         
         
@@ -111,11 +121,12 @@ public class Player : MonoBehaviour
 
         TurningFaceTo();
 
-        if (inputV > 0 && !isJumping)
+        if (inputV > 0 && !isJumping && isAttackOver)
         {
-            isJumping = true;
-            isGround = false;
+            isJumping = true;            
             failForce = moveSpeed * 2.5f;
+            animator.SetBool("isIdle", false);
+
         }
         else if (isJumping)
         {
@@ -219,9 +230,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Attack()
+    private bool CheckAnimatorState(string str)
     {
-
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer." + str))
+        {
+            return true;
+        }
+        return false;
     }
 
 }
