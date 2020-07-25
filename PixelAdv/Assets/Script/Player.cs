@@ -44,6 +44,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         rb2d = GetComponent<Rigidbody2D>();
         bc2d = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
@@ -62,17 +63,29 @@ public class Player : MonoBehaviour
     {
         
 
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Z) && isGround)
         {
             isAttacking = true;
             animator.SetBool("isAttacking", true);
+            if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.attack"))
+            {
+                animator.SetBool("isAttacking2", true);
+            }
+        }             
+        else if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.attackOver"))
+        {
+            isAttacking = false;
+            animator.SetBool("isAttacking", false);
+            animator.SetBool("isAttacking2", false);
 
-        }
-        else
+        }   
+        else if(!isAttacking)
         {
             Move();
-            isAttacking = false;            
         }
+
+        
+        
     }
 
     private void Move()
