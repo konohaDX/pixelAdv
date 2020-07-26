@@ -55,6 +55,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\AttackMgr.cs" />
+     <Compile Include="Assets\Script\Enemy.cs" />
      <Compile Include="Assets\Script\Player.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>D:/data/unity_project/pixelAdv/PixelAdv/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
