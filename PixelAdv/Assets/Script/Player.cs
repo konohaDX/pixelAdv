@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -48,12 +49,21 @@ public class Player : MonoBehaviour
     [SerializeField] private bool isHitting = false;
 
     // counter
-    [SerializeField] private bool isCounter = false;
+    [SerializeField] private bool isCounter = false;    
     public bool IsCounter
     {
         get { return isCounter; }
         set { isCounter = value; }
     }
+
+    [SerializeField] private bool counterSuccess = false;
+    public bool CounterSuccess
+    {
+        get { return counterSuccess; }
+        set { counterSuccess = value; }
+
+    }
+
     public bool IsHitting
     {
         get { return isHitting; }
@@ -71,6 +81,10 @@ public class Player : MonoBehaviour
     }
     
 
+    [SerializeField] private Text m_debugText;
+    [SerializeField] private Text m_debugText2;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -87,6 +101,9 @@ public class Player : MonoBehaviour
         Control();
         GroundDetect();
         AnimationChange();
+
+        m_debugText.text = "Counter: " + isCounter;
+        m_debugText2.text = "CounterSuccess: " + counterSuccess;
     }
     
     private void Control()
@@ -95,25 +112,33 @@ public class Player : MonoBehaviour
         
         // attack 
         if (Input.GetKeyDown(KeyCode.Z) && isGround && !isHitting)
-        {
+        {            
             isAttackOver = false;
-            if (!isAttacking1 && !isAttacking2)
+            if (counterSuccess)
             {
-                isAttacking1 = true;
-                animator.SetBool("isAttacking", true);
-                animator.SetBool("isRun", false);
+                Debug.Log("test");
+                animator.SetBool("isCounterAttack", true);
+            }
+            else if(!isCounter)
+            {
+                if (!isAttacking1 && !isAttacking2)
+                {
+                    isAttacking1 = true;
+                    animator.SetBool("isAttacking", true);
+                    animator.SetBool("isRun", false);
 
-            }
-            else if (isAttacking1)
-            {
-                animator.SetBool("isAttacking2", true);                
-                isAttacking2 = true;
-                isAttacking1 = false;
-            }
-            else if (isAttacking2)
-            {                
-                animator.SetBool("isAttacking3", true);
-            }                                   
+                }
+                else if (isAttacking1)
+                {
+                    animator.SetBool("isAttacking2", true);                
+                    isAttacking2 = true;
+                    isAttacking1 = false;
+                }
+                else if (isAttacking2)
+                {                
+                    animator.SetBool("isAttacking3", true);
+                }                    
+            }    
         }             
         else if(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.attackOver"))
         {
@@ -129,12 +154,13 @@ public class Player : MonoBehaviour
         // counter
         if (Input.GetKeyDown(KeyCode.X) && isGround && !isHitting && isAttackOver)
         {
+            animator.SetBool("isCounter", true);
             isCounter = true;
         }
 
 
         // move
-        if(isAttackOver && !isHitting)
+        if(isAttackOver && !isHitting && !isCounter)
         {
             Move();
         }
@@ -149,9 +175,12 @@ public class Player : MonoBehaviour
         {
             isHitting = false;            
         }
+
         if (CheckAnimatorState("counterOver"))
         {
             isCounter = false;
+            counterSuccess = false;
+            animator.SetBool("isCounterAttack", false);            
         }
         
 
@@ -252,10 +281,6 @@ public class Player : MonoBehaviour
                 animator.SetBool("isRun", false);
             }
 
-            if (isCounter)
-            {
-                animator.SetBool("isCounter", true);
-            }
         }
         else
         {
@@ -320,10 +345,13 @@ public class Player : MonoBehaviour
         isHitting = true;
         ResetAllAnimatorParameters();
         animator.SetBool("isDamaged", true);        
-
-        rb2d.velocity = new Vector2(0.0f, rb2d.velocity.y);
+        
+        rb2d.velocity = new Vector2(0.0f, 0);//rb2d.velocity.y);
         isAttackOver = true;
-        //isCounter = false;
+        isCounter = false;
+        counterSuccess = false;
+        isJumping = false;
+        
         isAttacking1 = false;
         isAttacking2 = false;
     }

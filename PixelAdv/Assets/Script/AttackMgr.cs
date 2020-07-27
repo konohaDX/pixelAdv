@@ -45,13 +45,15 @@ public class AttackMgr : MonoBehaviour
             else if (type == "Enemy")
             {
                 enemy.Attack();
+
                 if (enemy.IsAttackKeyFrame)
                 {
+                    Debug.Log(player.IsCounter);
                     if (player.IsCounter)
                     {
-                        Debug.Log("Player is counter~!!!");
+                        player.CounterSuccess = true;
                     }
-                    else
+                    else if(!player.IsCounter)
                     {
                         player.IsDamaged();
                     }
